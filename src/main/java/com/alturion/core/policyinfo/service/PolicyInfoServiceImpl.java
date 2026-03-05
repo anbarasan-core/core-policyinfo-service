@@ -1,0 +1,80 @@
+package com.alturion.core.policyinfo.service;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.logging.Logger;
+
+import org.springframework.stereotype.Service;
+
+import com.alturion.core.policyinfo.client.PolicyOwnerClient;
+import com.alturion.core.policyinfo.domain.PolicyInfo;
+import com.alturion.core.policyinfo.domain.PolicyPlan;
+import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;
+import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
+import com.alturion.core.policyinfo.enums.PolicyStatus;
+import com.alturion.core.policyinfo.exception.InvalidPremiumAmountException;
+import com.alturion.core.policyinfo.exception.PlanNotFoundException;
+import com.alturion.core.policyinfo.repository.PolicyInfoRepository;
+import com.alturion.core.policyinfo.repository.PolicyPlanRepository;
+
+@Service
+public class PolicyInfoServiceImpl implements PolicyInfoService{
+	
+	private static final Logger logger = Logger.getLogger(PolicyInfoServiceImpl.class.getName());
+	
+	private final PolicyOwnerClient policyOwnerClient;
+	private final PolicyPlanRepository policyPlanRepository;
+	private final PolicyInfoRepository policyInfoRepository;
+	
+	public PolicyInfoServiceImpl(PolicyOwnerClient policyOwnerClient,PolicyPlanRepository policyPlanRepository,PolicyInfoRepository policyInfoRepository){
+		this.policyOwnerClient = policyOwnerClient;
+		this.policyPlanRepository = policyPlanRepository;
+		this.policyInfoRepository = policyInfoRepository;
+	}
+
+	@Override
+	public PolicyInfoResponseDto createPolicy(PolicyInfoRequestDto policyInfoRequestDto) {
+		
+		logger.info("PolicyInfoServiceImpl::createPolicy");
+		policyOwnerClient.validatePolicyOwnerExists(policyInfoRequestDto.getPolicyOwnerId());
+		
+		PolicyPlan currentPlan = policyPlanRepository.findByPolicyCategoryAndPolicyTier(policyInfoRequestDto.getPolicyCategory(),policyInfoRequestDto.getPolicyTier())
+															   .orElseThrow(()-> new PlanNotFoundException("Requested Plan Does Not Match Our Records"));
+		BigDecimal currentPremium = policyInfoRequestDto.getPremiumAmount();
+		BigDecimal minimumPremium = currentPlan.getPremiumAmount();
+
+		if(currentPremium.compareTo(minimumPremium) < 0) {
+		    throw new InvalidPremiumAmountException(
+		        "Premium Amount does not meet the minimum required for this plan");
+		}
+		PolicyInfo policyInfo = new PolicyInfo();
+		policyInfo.setPremiumAmount(policyInfoRequestDto.getPremiumAmount());
+		policyInfo.setPolicyOwnerId(policyInfoRequestDto.getPolicyOwnerId());
+		policyInfo.setStartDate(policyInfoRequestDto.getStartDate());
+		policyInfo.setEndDate(policyInfoRequestDto.getEndDate());
+		policyInfo.setCoverageAmount(currentPlan.getCoverageAmount());
+		policyInfo.setPolicyCategory(currentPlan.getPolicyCategory());
+		policyInfo.setPolicyTier(currentPlan.getPolicyTier());
+		policyInfo.setPolicyPlan(currentPlan);
+		policyInfo.setCreatedAt(LocalDateTime.now());
+		policyInfo.setUpdatedAt(LocalDateTime.now());
+		policyInfo.setPolicyStatus(PolicyStatus.ACTIVE);
+		
+		PolicyInfo savedPolicy = policyInfoRepository.save(policyInfo);
+		
+		PolicyInfoResponseDto policyInfoResponseDto = new PolicyInfoResponseDto();
+		policyInfoResponseDto.setPremiumAmount(savedPolicy.getPremiumAmount());
+		policyInfoResponseDto.setPolicyOwnerId(savedPolicy.getPolicyOwnerId());
+		policyInfoResponseDto.setStartDate(savedPolicy.getStartDate());
+		policyInfoResponseDto.setEndDate(savedPolicy.getEndDate());
+		policyInfoResponseDto.setCoverageAmount(savedPolicy.getCoverageAmount());
+		policyInfoResponseDto.setPolicyCategory(savedPolicy.getPolicyCategory());
+		policyInfoResponseDto.setPolicyTier(savedPolicy.getPolicyTier());
+		policyInfoResponseDto.setCreatedAt(savedPolicy.getCreatedAt());
+		policyInfoResponseDto.setUpdatedAt(savedPolicy.getUpdatedAt());
+		policyInfoResponseDto.setPolicyStatus(savedPolicy.getPolicyStatus());
+		policyInfoResponseDto.setPolicyNumber(savedPolicy.getPolicyNumber());
+		policyInfoResponseDto.setPolicyID(savedPolicy.getPolicyID());
+		return policyInfoResponseDto;
+	}
+
+}
