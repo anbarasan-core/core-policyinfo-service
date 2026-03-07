@@ -73,6 +73,18 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<ApiResponse<Void>>(methodArgumentResponse,HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException illegalStateException) {
+		
+		ApiResponse<Void> illegalStateResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.BAD_REQUEST.value(),
+				illegalStateException.getMessage(),
+				null
+				);
+		return new ResponseEntity<ApiResponse<Void>>(illegalStateResponse,HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
 		

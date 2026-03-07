@@ -110,4 +110,22 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public void cancelPolicy(String policyNumber) {
+		
+		logger.info("PolicyInfoServiceImpl::cancelPolicy");
+		policyNumber = policyNumber.trim().toUpperCase();
+		PolicyInfo policyInfo = policyInfoRepository.findByPolicyNumber(policyNumber)
+												    .orElseThrow(()-> new ResourceNotFoundException("No Details found for this policyNumber"));
+		if(policyInfo.getPolicyStatus() != PolicyStatus.ACTIVE) {
+			throw new IllegalStateException ("Policy is Not active. Unable to cancel");
+		}
+		else {
+			policyInfo.setPolicyStatus(PolicyStatus.CANCELLED);
+			policyInfo.setUpdatedAt(LocalDateTime.now());
+			policyInfoRepository.save(policyInfo);
+		}
+		
+	}
+
 }

@@ -12,5 +12,7 @@ public interface PolicyInfoService {
 	public PolicyInfoResponseDto getPolicy(String policyNumber);
 	
 	public List<PolicyInfoResponseDto> getAllPolicyDetails(Long policyOwnerId);
+	
+	public void cancelPolicy(String policyNumber);
 
 }
