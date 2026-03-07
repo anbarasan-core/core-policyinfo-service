@@ -29,13 +29,14 @@ public class PolicyPlan {
 	private boolean isActive;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+	private int tenureYears;
 	
 	
 	public PolicyPlan() {
 		super();
 	}
 	public PolicyPlan(Long planID, PolicyCategory policyCategory, PolicyTier policyTier, BigDecimal premiumAmount,
-			BigDecimal coverageAmount, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+			BigDecimal coverageAmount, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, int tenureYears) {
 		super();
 		this.planID = planID;
 		this.policyCategory = policyCategory;
@@ -45,6 +46,7 @@ public class PolicyPlan {
 		this.isActive = isActive;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.tenureYears = tenureYears;
 	}
 	public Long getPlanID() {
 		return planID;
@@ -94,6 +96,13 @@ public class PolicyPlan {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+	public int getTenureYears() {
+		return tenureYears;
+	}
+	public void setTenureYears(int tenureYears) {
+		this.tenureYears = tenureYears;
+	}
+	
 	
 
 }

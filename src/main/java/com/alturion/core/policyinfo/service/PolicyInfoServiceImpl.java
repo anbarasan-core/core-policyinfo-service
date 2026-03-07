@@ -1,5 +1,6 @@
 package com.alturion.core.policyinfo.service;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +57,8 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		PolicyInfo policyInfo = new PolicyInfo();
 		policyInfo.setPremiumAmount(policyInfoRequestDto.getPremiumAmount());
 		policyInfo.setPolicyOwnerId(policyInfoRequestDto.getPolicyOwnerId());
-		policyInfo.setStartDate(policyInfoRequestDto.getStartDate());
-		policyInfo.setEndDate(policyInfoRequestDto.getEndDate());
+		policyInfo.setStartDate(LocalDate.now());
+		policyInfo.setEndDate(LocalDate.now().plusYears(currentPlan.getTenureYears()));
 		policyInfo.setCoverageAmount(currentPlan.getCoverageAmount());
 		policyInfo.setPolicyCategory(currentPlan.getPolicyCategory());
 		policyInfo.setPolicyTier(currentPlan.getPolicyTier());
@@ -68,19 +69,7 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		
 		PolicyInfo savedPolicy = policyInfoRepository.save(policyInfo);
 		
-		PolicyInfoResponseDto policyInfoResponseDto = new PolicyInfoResponseDto();
-		policyInfoResponseDto.setPremiumAmount(savedPolicy.getPremiumAmount());
-		policyInfoResponseDto.setPolicyOwnerId(savedPolicy.getPolicyOwnerId());
-		policyInfoResponseDto.setStartDate(savedPolicy.getStartDate());
-		policyInfoResponseDto.setEndDate(savedPolicy.getEndDate());
-		policyInfoResponseDto.setCoverageAmount(savedPolicy.getCoverageAmount());
-		policyInfoResponseDto.setPolicyCategory(savedPolicy.getPolicyCategory());
-		policyInfoResponseDto.setPolicyTier(savedPolicy.getPolicyTier());
-		policyInfoResponseDto.setCreatedAt(savedPolicy.getCreatedAt());
-		policyInfoResponseDto.setUpdatedAt(savedPolicy.getUpdatedAt());
-		policyInfoResponseDto.setPolicyStatus(savedPolicy.getPolicyStatus());
-		policyInfoResponseDto.setPolicyNumber(savedPolicy.getPolicyNumber());
-		policyInfoResponseDto.setPolicyID(savedPolicy.getPolicyID());
+		PolicyInfoResponseDto policyInfoResponseDto = policyInfoMapper.toResponseDto(savedPolicy);
 		return policyInfoResponseDto;
 	}
 
