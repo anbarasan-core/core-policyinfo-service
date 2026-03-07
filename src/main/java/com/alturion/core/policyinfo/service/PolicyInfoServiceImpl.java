@@ -1,7 +1,10 @@
 package com.alturion.core.policyinfo.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -91,6 +94,20 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		PolicyInfoResponseDto policyInfoResponse = policyInfoMapper.toResponseDto(policyInfo);
 		
 		return policyInfoResponse;
+	}
+
+	@Override
+	public List<PolicyInfoResponseDto> getAllPolicyDetails(Long policyOwnerId) {
+		
+		logger.info("PolicyInfoServiceImpl::getAllPolicyDetails");
+		policyOwnerClient.validatePolicyOwnerExists(policyOwnerId);
+		List<PolicyInfo> listOfPolicies = new ArrayList<>();
+		listOfPolicies = policyInfoRepository.findByPolicyOwnerId(policyOwnerId)
+											 .orElseThrow(()-> new ResourceNotFoundException("No Policies found for this owner"));
+		
+		return listOfPolicies.stream()
+				.map(policyInfoMapper::toResponseDto)
+				.collect(Collectors.toList());
 	}
 
 }

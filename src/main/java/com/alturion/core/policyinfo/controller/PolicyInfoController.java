@@ -42,17 +42,30 @@ public class PolicyInfoController {
 		return new ResponseEntity<ApiResponse<PolicyInfoResponseDto>>(apiPolicyResponse,HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/policy/{policyNumber}")
+	@GetMapping("/{policyNumber}")
 	public ResponseEntity<ApiResponse<PolicyInfoResponseDto>> fetchPolicyDetails (@PathVariable String policyNumber){
 		
 		PolicyInfoResponseDto policyDetails = policyInfoService.getPolicy(policyNumber);
 		ApiResponse<PolicyInfoResponseDto> apiPolicyResponse = new ApiResponse<>(
 				LocalDateTime.now(),
-				HttpStatus.FOUND.value(),
+				HttpStatus.OK.value(),
 				"Policy Fetched Successfully",
 				policyDetails
 				);
-		return new ResponseEntity<ApiResponse<PolicyInfoResponseDto>> (apiPolicyResponse,HttpStatus.FOUND) ;
+		return new ResponseEntity<ApiResponse<PolicyInfoResponseDto>> (apiPolicyResponse,HttpStatus.OK) ;
+	}
+	
+	@GetMapping("/owner/{policyOwnerId}")
+	public ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> fetchAllPolicies(@PathVariable Long policyOwnerId) {
+		
+		List<PolicyInfoResponseDto> policiesList = policyInfoService.getAllPolicyDetails(policyOwnerId);
+		ApiResponse<List<PolicyInfoResponseDto>> apiPolicyResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.OK.value(),
+				"Policy Details Fetched Successfully",
+				policiesList
+				);
+		return new ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> (apiPolicyResponse,HttpStatus.OK);
 	}
 
 }
