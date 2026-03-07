@@ -69,7 +69,7 @@ public class PolicyInfo {
 	
 	@PostPersist
 	private void initPolicyNumber() {
-		this.policyNumber = "ALTPL" + this.policyID;
+		this.policyNumber = String.format("ALT-PL-%04d", this.policyID);
 	}
 	
 	public PolicyCategory getPolicyCategory() {

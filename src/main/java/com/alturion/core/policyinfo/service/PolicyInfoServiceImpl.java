@@ -13,6 +13,8 @@ import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
 import com.alturion.core.policyinfo.enums.PolicyStatus;
 import com.alturion.core.policyinfo.exception.InvalidPremiumAmountException;
 import com.alturion.core.policyinfo.exception.PlanNotFoundException;
+import com.alturion.core.policyinfo.exception.ResourceNotFoundException;
+import com.alturion.core.policyinfo.mapper.PolicyInfoMapper;
 import com.alturion.core.policyinfo.repository.PolicyInfoRepository;
 import com.alturion.core.policyinfo.repository.PolicyPlanRepository;
 
@@ -24,11 +26,13 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 	private final PolicyOwnerClient policyOwnerClient;
 	private final PolicyPlanRepository policyPlanRepository;
 	private final PolicyInfoRepository policyInfoRepository;
+	private final PolicyInfoMapper policyInfoMapper;
 	
-	public PolicyInfoServiceImpl(PolicyOwnerClient policyOwnerClient,PolicyPlanRepository policyPlanRepository,PolicyInfoRepository policyInfoRepository){
+	public PolicyInfoServiceImpl(PolicyOwnerClient policyOwnerClient,PolicyPlanRepository policyPlanRepository,PolicyInfoRepository policyInfoRepository,PolicyInfoMapper policyInfoMapper){
 		this.policyOwnerClient = policyOwnerClient;
 		this.policyPlanRepository = policyPlanRepository;
 		this.policyInfoRepository = policyInfoRepository;
+		this.policyInfoMapper = policyInfoMapper;
 	}
 
 	@Override
@@ -75,6 +79,18 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		policyInfoResponseDto.setPolicyNumber(savedPolicy.getPolicyNumber());
 		policyInfoResponseDto.setPolicyID(savedPolicy.getPolicyID());
 		return policyInfoResponseDto;
+	}
+
+	@Override
+	public PolicyInfoResponseDto getPolicy(String policyNumber) {
+		
+		logger.info("PolicyInfoServiceImpl::getPolicy");
+		policyNumber = policyNumber.trim().toUpperCase();
+		PolicyInfo policyInfo = policyInfoRepository.findByPolicyNumber(policyNumber)
+													.orElseThrow(()-> new ResourceNotFoundException("No Details found for this policyNumber"));
+		PolicyInfoResponseDto policyInfoResponse = policyInfoMapper.toResponseDto(policyInfo);
+		
+		return policyInfoResponse;
 	}
 
 }
