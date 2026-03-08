@@ -81,5 +81,18 @@ public class PolicyInfoController {
 				);
 		return new ResponseEntity<ApiResponse<Void>>(apiPolicyResponse,HttpStatus.OK);
 	}
+	
+	@PatchMapping("/{policyNumber}/renew")
+	public ResponseEntity<ApiResponse<PolicyInfoResponseDto>> renewalOfPolicy(@PathVariable String policyNumber) {
+		
+		PolicyInfoResponseDto policyDetails= policyInfoService.renewPolicy(policyNumber);
+		ApiResponse<PolicyInfoResponseDto> apiPolicyResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.OK.value(),
+				"Policy Renewed Successfully",
+				policyDetails
+				);
+		return new ResponseEntity<ApiResponse<PolicyInfoResponseDto>>(apiPolicyResponse,HttpStatus.OK);
+	}
 
 }

@@ -14,9 +14,11 @@ import com.alturion.core.policyinfo.domain.PolicyInfo;
 import com.alturion.core.policyinfo.domain.PolicyPlan;
 import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
+import com.alturion.core.policyinfo.enums.PolicyCategory;
 import com.alturion.core.policyinfo.enums.PolicyStatus;
 import com.alturion.core.policyinfo.exception.InvalidPremiumAmountException;
 import com.alturion.core.policyinfo.exception.PlanNotFoundException;
+import com.alturion.core.policyinfo.exception.RenewalException;
 import com.alturion.core.policyinfo.exception.ResourceNotFoundException;
 import com.alturion.core.policyinfo.mapper.PolicyInfoMapper;
 import com.alturion.core.policyinfo.repository.PolicyInfoRepository;
@@ -115,6 +117,43 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 			policyInfoRepository.save(policyInfo);
 		}
 		
+	}
+
+	@Override
+	public PolicyInfoResponseDto renewPolicy(String policyNumber) {
+		
+		policyNumber = policyNumber.trim().toUpperCase();
+		PolicyInfo policyInfo = policyInfoRepository.findByPolicyNumber(policyNumber)
+													.orElseThrow(()-> new ResourceNotFoundException("No Details found for this policyNumber"));
+		LocalDate renewalStartDate = policyInfo.getEndDate().minusMonths(6);
+		LocalDate renewalEndDate = policyInfo.getEndDate().plusMonths(6);
+		LocalDate today = LocalDate.now();
+		int tenureYears = policyInfo.getPolicyPlan().getTenureYears();
+		
+		if(policyInfo.getPolicyStatus() == PolicyStatus.CANCELLED){
+			throw new RenewalException("Policy Cancelled and cannot be Renewed");
+		}
+		if(policyInfo.getPolicyStatus() == PolicyStatus.EXPIRED){
+			throw new RenewalException("Policy Expired and cannot be Renewed");
+		}
+		
+		if(!today.isBefore(renewalStartDate) && !today.isAfter(policyInfo.getEndDate())
+					&& policyInfo.getPolicyStatus() == PolicyStatus.ACTIVE) {
+				policyInfo.setEndDate(policyInfo.getEndDate().plusYears(tenureYears));
+			
+		}
+		else if(!today.isBefore(policyInfo.getEndDate()) && !today.isAfter(renewalEndDate)
+					&& policyInfo.getPolicyStatus() == PolicyStatus.INACTIVE){
+				policyInfo.setEndDate(policyInfo.getEndDate().plusYears(tenureYears));
+				policyInfo.setPolicyStatus(PolicyStatus.ACTIVE);
+		}
+		else{
+			throw new RenewalException("Policy Renewal Period Not Active");
+		}
+		PolicyInfo savedPolicyDetails = policyInfoRepository.save(policyInfo);
+		PolicyInfoResponseDto policyInfoResponseDto = policyInfoMapper.toResponseDto(savedPolicyDetails);
+		return policyInfoResponseDto;
+		 
 	}
 
 }

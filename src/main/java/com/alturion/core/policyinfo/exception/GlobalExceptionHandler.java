@@ -85,6 +85,18 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<ApiResponse<Void>>(illegalStateResponse,HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(RenewalException.class)
+	public ResponseEntity<ApiResponse<Void>> handleRenewalResponse(RenewalException renewalException) {
+		
+		ApiResponse<Void> renewalResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.BAD_REQUEST.value(),
+				renewalException.getMessage(),
+				null
+				);
+		return new ResponseEntity<ApiResponse<Void>>(renewalResponse,HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
 		
