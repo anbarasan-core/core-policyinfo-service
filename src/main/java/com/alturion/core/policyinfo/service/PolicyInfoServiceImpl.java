@@ -14,7 +14,6 @@ import com.alturion.core.policyinfo.domain.PolicyInfo;
 import com.alturion.core.policyinfo.domain.PolicyPlan;
 import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
-import com.alturion.core.policyinfo.enums.PolicyCategory;
 import com.alturion.core.policyinfo.enums.PolicyStatus;
 import com.alturion.core.policyinfo.exception.InvalidPremiumAmountException;
 import com.alturion.core.policyinfo.exception.PlanNotFoundException;
@@ -94,6 +93,19 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		policyOwnerClient.validatePolicyOwnerExists(policyOwnerId);
 		List<PolicyInfo> listOfPolicies = new ArrayList<>();
 		listOfPolicies = policyInfoRepository.findByPolicyOwnerId(policyOwnerId)
+											 .orElseThrow(()-> new ResourceNotFoundException("No Policies found for this owner"));
+		
+		return listOfPolicies.stream()
+				.map(policyInfoMapper::toResponseDto)
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<PolicyInfoResponseDto> getAllPolicyDetails(List<Long> policyOwnerId) {
+		
+		logger.info("PolicyInfoServiceImpl::getAllPolicyDetails");
+		List<PolicyInfo> listOfPolicies = new ArrayList<>();
+		listOfPolicies = policyInfoRepository.findByPolicyOwnerIdIn(policyOwnerId)
 											 .orElseThrow(()-> new ResourceNotFoundException("No Policies found for this owner"));
 		
 		return listOfPolicies.stream()

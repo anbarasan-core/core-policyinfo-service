@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alturion.core.policyinfo.common.ApiResponse;
@@ -58,6 +59,19 @@ public class PolicyInfoController {
 	
 	@GetMapping("/owner/{policyOwnerId}")
 	public ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> fetchAllPolicies(@PathVariable Long policyOwnerId) {
+		
+		List<PolicyInfoResponseDto> policiesList = policyInfoService.getAllPolicyDetails(policyOwnerId);
+		ApiResponse<List<PolicyInfoResponseDto>> apiPolicyResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.OK.value(),
+				"Policy Details Fetched Successfully",
+				policiesList
+				);
+		return new ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> (apiPolicyResponse,HttpStatus.OK);
+	}
+	
+	@GetMapping("/owner/policies")
+	public ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> fetchAllPolicies(@RequestParam List<Long> policyOwnerId) {
 		
 		List<PolicyInfoResponseDto> policiesList = policyInfoService.getAllPolicyDetails(policyOwnerId);
 		ApiResponse<List<PolicyInfoResponseDto>> apiPolicyResponse = new ApiResponse<>(

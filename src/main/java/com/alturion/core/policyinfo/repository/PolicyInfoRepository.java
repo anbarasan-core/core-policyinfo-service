@@ -14,5 +14,7 @@ public interface PolicyInfoRepository extends JpaRepository<PolicyInfo,Long> {
 	public Optional<PolicyInfo> findByPolicyNumber(String policyNumber);
 	
 	public Optional<List<PolicyInfo>> findByPolicyOwnerId(Long policyOwnerId);
+	
+	public Optional<List<PolicyInfo>> findByPolicyOwnerIdIn(List<Long> policyOwnerId);
 
 }
