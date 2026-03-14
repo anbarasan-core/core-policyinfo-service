@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.alturion.core.policyinfo.domain.PolicyInfo;
+import com.alturion.core.policyinfo.enums.PolicyCategory;
+import com.alturion.core.policyinfo.enums.PolicyTier;
 
 @Repository
 public interface PolicyInfoRepository extends JpaRepository<PolicyInfo,Long> {
@@ -20,5 +22,7 @@ public interface PolicyInfoRepository extends JpaRepository<PolicyInfo,Long> {
 	public Optional<List<PolicyInfo>> findByPolicyOwnerIdIn(List<Long> policyOwnerId);
 	
 	public Page<PolicyInfo> findByPolicyOwnerIdIn(List<Long> policyOwnerId, Pageable pageable);
+	
+	public boolean existsByPolicyOwnerIdAndPolicyCategoryAndPolicyTier(Long policyOwnerId, PolicyCategory policyCategory, PolicyTier policyTier);
 
 }

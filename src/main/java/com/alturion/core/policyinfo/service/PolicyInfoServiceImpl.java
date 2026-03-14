@@ -21,6 +21,7 @@ import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
 import com.alturion.core.policyinfo.enums.PolicyStatus;
 import com.alturion.core.policyinfo.exception.InvalidPremiumAmountException;
 import com.alturion.core.policyinfo.exception.PlanNotFoundException;
+import com.alturion.core.policyinfo.exception.PolicyCreationNotValidException;
 import com.alturion.core.policyinfo.exception.RenewalException;
 import com.alturion.core.policyinfo.exception.ResourceNotFoundException;
 import com.alturion.core.policyinfo.mapper.PolicyInfoMapper;
@@ -50,6 +51,10 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		logger.info("PolicyInfoServiceImpl::createPolicy");
 		policyOwnerClient.validatePolicyOwnerExists(policyInfoRequestDto.getPolicyOwnerId());
 		
+		boolean validatePolicy = policyInfoRepository.existsByPolicyOwnerIdAndPolicyCategoryAndPolicyTier(policyInfoRequestDto.getPolicyOwnerId(), policyInfoRequestDto.getPolicyCategory(), policyInfoRequestDto.getPolicyTier());
+		if(validatePolicy) {
+			throw new PolicyCreationNotValidException("Policy already exists under same category and tier for this owner");
+		}
 		PolicyPlan currentPlan = policyPlanRepository.findByPolicyCategoryAndPolicyTier(policyInfoRequestDto.getPolicyCategory(),policyInfoRequestDto.getPolicyTier())
 															   .orElseThrow(()-> new PlanNotFoundException("Requested Plan Does Not Match Our Records"));
 		BigDecimal currentPremium = policyInfoRequestDto.getPremiumAmount();

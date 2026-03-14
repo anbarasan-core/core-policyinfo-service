@@ -49,6 +49,18 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<ApiResponse<Void>>(invalidPlanResponse,HttpStatus.NOT_FOUND);
 	}
 	
+	@ExceptionHandler(PolicyCreationNotValidException.class)
+	public ResponseEntity<ApiResponse<Void>> handlePolicyCreationException(PolicyCreationNotValidException policyCreationException) {
+		
+		ApiResponse<Void> policyCreationResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.BAD_REQUEST.value(),
+				policyCreationException.getMessage(),
+				null
+				);
+		return new ResponseEntity<ApiResponse<Void>>(policyCreationResponse,HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(DependencyServiceUnavailableException.class)
 	public ResponseEntity<ApiResponse<Void>> handleDependencyServiceUnavailableException(DependencyServiceUnavailableException dependencyServiceException) {
 		

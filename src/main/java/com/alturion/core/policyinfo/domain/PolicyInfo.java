@@ -19,9 +19,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "core_policy_info")
+@Table(name = "core_policy_info", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"policy_owner_id","policy_category","policy_tier"}
+    ))
 public class PolicyInfo {
 	
 	@Id
