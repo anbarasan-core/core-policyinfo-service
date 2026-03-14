@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.alturion.core.policyinfo.client.PolicyOwnerClient;
 import com.alturion.core.policyinfo.domain.PolicyInfo;
 import com.alturion.core.policyinfo.domain.PolicyPlan;
+import com.alturion.core.policyinfo.dto.PageResponseDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
 import com.alturion.core.policyinfo.enums.PolicyStatus;
@@ -112,6 +116,25 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 				.map(policyInfoMapper::toResponseDto)
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public PageResponseDto<PolicyInfoResponseDto> getAllPoliciesByPages(List<Long> policyOwnerId, int page, int size) {
+		
+		logger.info("PolicyInfoServiceImpl::getAllPoliciesByPages");
+		Pageable pageable = PageRequest.of(page, size);
+		Page<PolicyInfo> allPoliciesByPage = policyInfoRepository.findByPolicyOwnerIdIn(policyOwnerId, pageable);
+		PageResponseDto<PolicyInfoResponseDto> pageResponse = new PageResponseDto<>();
+		pageResponse.setCurrentPage(allPoliciesByPage.getNumber());
+		pageResponse.setTotalPage(allPoliciesByPage.getTotalPages());
+		pageResponse.setTotalElements(allPoliciesByPage.getTotalElements());
+		
+		List<PolicyInfoResponseDto> dtoList = allPoliciesByPage.getContent()
+												.stream()
+												.map(policyInfoMapper::toResponseDto)
+												.collect(Collectors.toList());
+		pageResponse.setContent(dtoList);
+		return pageResponse;
+	}
 
 	@Override
 	public void cancelPolicy(String policyNumber) {
@@ -167,5 +190,4 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 		return policyInfoResponseDto;
 		 
 	}
-
 }

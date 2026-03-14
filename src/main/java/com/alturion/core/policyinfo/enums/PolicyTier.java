@@ -5,5 +5,4 @@ public enum PolicyTier {
 	GOLD,
 	SILVER,
 	BRONZE
-
 }

@@ -2,7 +2,6 @@ package com.alturion.core.policyinfo.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 import com.alturion.core.policyinfo.domain.PolicyInfo;
 import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;

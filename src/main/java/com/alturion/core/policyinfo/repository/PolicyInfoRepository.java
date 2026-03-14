@@ -3,6 +3,8 @@ package com.alturion.core.policyinfo.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +18,7 @@ public interface PolicyInfoRepository extends JpaRepository<PolicyInfo,Long> {
 	public Optional<List<PolicyInfo>> findByPolicyOwnerId(Long policyOwnerId);
 	
 	public Optional<List<PolicyInfo>> findByPolicyOwnerIdIn(List<Long> policyOwnerId);
+	
+	public Page<PolicyInfo> findByPolicyOwnerIdIn(List<Long> policyOwnerId, Pageable pageable);
 
 }

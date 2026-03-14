@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alturion.core.policyinfo.common.ApiResponse;
+import com.alturion.core.policyinfo.dto.PageResponseDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoRequestDto;
 import com.alturion.core.policyinfo.dto.PolicyInfoResponseDto;
 import com.alturion.core.policyinfo.service.PolicyInfoService;
@@ -81,6 +82,19 @@ public class PolicyInfoController {
 				policiesList
 				);
 		return new ResponseEntity<ApiResponse<List<PolicyInfoResponseDto>>> (apiPolicyResponse,HttpStatus.OK);
+	}
+	
+	@GetMapping("/owner/policies-pages")
+	public ResponseEntity<ApiResponse<PageResponseDto<PolicyInfoResponseDto>>> fetchAllPoliciesByPages(@RequestParam List<Long> policyOwnerId,@RequestParam int page, @RequestParam int size) {
+		
+		PageResponseDto<PolicyInfoResponseDto> policiesPages = policyInfoService.getAllPoliciesByPages(policyOwnerId, page, size);
+		ApiResponse<PageResponseDto<PolicyInfoResponseDto>> apiPolicyResponse = new ApiResponse<>(
+				LocalDateTime.now(),
+				HttpStatus.OK.value(),
+				"Policy Details Fetched Successfully",
+				policiesPages
+				);
+		return new ResponseEntity<ApiResponse<PageResponseDto<PolicyInfoResponseDto>>> (apiPolicyResponse,HttpStatus.OK);
 	}
 	
 	@PatchMapping("/{policyNumber}/cancel")
