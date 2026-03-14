@@ -31,9 +31,13 @@ config       → application configurations
 API Endpoints:
 
 POST  - /create
+
 GET   - /{policyNumber}
+
 GET   - /policies/owner/{policyOwnerId}
+
 PATCH - /{policyNumber}/cancel
+
 PATCH - /{policyNumber}/renew
 
 These endpoints support policy creation, retrieval of policy details, retrieval of policies under specific owners, and aggregated policy retrieval required by the Agent Service.
