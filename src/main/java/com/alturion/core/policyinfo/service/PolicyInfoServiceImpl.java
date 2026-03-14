@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -126,7 +127,7 @@ public class PolicyInfoServiceImpl implements PolicyInfoService{
 	public PageResponseDto<PolicyInfoResponseDto> getAllPoliciesByPages(List<Long> policyOwnerId, int page, int size) {
 		
 		logger.info("PolicyInfoServiceImpl::getAllPoliciesByPages");
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 		Page<PolicyInfo> allPoliciesByPage = policyInfoRepository.findByPolicyOwnerIdIn(policyOwnerId, pageable);
 		PageResponseDto<PolicyInfoResponseDto> pageResponse = new PageResponseDto<>();
 		pageResponse.setCurrentPage(allPoliciesByPage.getNumber());
