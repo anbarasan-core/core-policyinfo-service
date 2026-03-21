@@ -3,12 +3,17 @@ package com.alturion.core.policyinfo.client;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.alturion.core.policyinfo.common.ApiResponse;
+import com.alturion.core.policyinfo.dto.PolicyOwnerSummaryDto;
 import com.alturion.core.policyinfo.exception.DependencyServiceUnavailableException;
 import com.alturion.core.policyinfo.exception.ResourceNotFoundException;
 
@@ -26,13 +31,19 @@ public class PolicyOwnerClient {
 		this.policyOwnerBaseUrl = policyOwnerBaseUrl;
 	}
 	
-	public void validatePolicyOwnerExists(Long policyOwnerId) {
+	public PolicyOwnerSummaryDto validatePolicyOwnerExists(Long policyOwnerId) {
 		
 		logger.info("PolicyOwnerClient::validatePolicyOwnerExists");
 		String url = policyOwnerBaseUrl + policyOwnerId;
-		
+		logger.info("GET " +url);
+		PolicyOwnerSummaryDto summaryDto = new PolicyOwnerSummaryDto();
 		try {
-			restTemplate.getForObject(url, Object.class);
+			ResponseEntity<ApiResponse<PolicyOwnerSummaryDto>> apiResponse = restTemplate.exchange(url, 
+					HttpMethod.GET, 
+					null, 
+					new ParameterizedTypeReference<ApiResponse<PolicyOwnerSummaryDto>>() {}
+			);
+			summaryDto = apiResponse.getBody().getData();
 		}
 		catch(HttpClientErrorException httpException) {
 			if(httpException.getStatusCode()==HttpStatus.NOT_FOUND) {
@@ -42,6 +53,7 @@ public class PolicyOwnerClient {
 		catch(ResourceAccessException resourceException) {
 			throw new DependencyServiceUnavailableException("Dependency Service is Not Available");
 		}
+		return summaryDto;
 	}
 
 }
