@@ -2,7 +2,7 @@ Core PolicyInfo Service:
 
 1) Description:
 
-	The Policy Info Service is a standalone microservice responsible for managing policy data within the Alturion Policy Systems. It exposes REST APIs for policy creation, retrieval, and status management, acting as the central source for all policy-related information. This service ensures data consistency and supports interactions with other microservices by providing endpoints for policy validation and aggregation. It is designed using a layered architecture with standardized API responses and centralized exception handling to ensure maintainability and reliability.
+	The Policy Info Service is a standalone microservice responsible for managing policy data within the Alturion Policy Systems. It exposes REST APIs for policy creation, retrieval, and status management, acting as the central source for all policy-related information. It is designed using a layered architecture with standardized API responses and centralized exception handling to ensure maintainability and reliability.
 
 
 2) Responsibilities  
