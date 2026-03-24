@@ -23,7 +23,7 @@ Core PolicyInfo Service:
 	
 	• Spring Boot
 	
-	• Spring Data JP
+	• Spring Data JPA
 	
 	• SQL
 	
