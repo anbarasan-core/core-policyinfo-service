@@ -1,47 +1,75 @@
 Core PolicyInfo Service:
 
-Description:
+1) Description:
 
-The Policy Info Service is a standalone microservice responsible for managing policy information in Alturion Policy Systems. It provides REST APIs for policy creation, retrieval of policy details, and policy status management. This service acts as the source of truth for policy-related data and ensures that all policy information is maintained consistently within the system. It also provides endpoints that allow other services to retrieve policy data for aggregation and validation purposes. The service follows microservice architecture principles, including layered architecture, standardized API responses, and global exception handling to ensure reliability and maintainability.
+	The Policy Info Service is a standalone microservice responsible for managing policy data within the Alturion Policy Systems. It exposes REST APIs for policy creation, retrieval, and status management, acting as the central source for all policy-related information. This service ensures data consistency and supports interactions with other microservices by providing endpoints for policy validation and aggregation. It is designed using a layered architecture with standardized API responses and centralized exception handling to ensure maintainability and reliability.
 
-The service collaborates with:
 
-->Policy Owner Service to validate the existence of policy owners before creating or retrieving policies
+2) Responsibilities  
 
-->Agent Service to provide policy information required for agent dashboard aggregation and reporting operations
+	• Manage policy data and lifecycle states (creation -> active, expired, terminated)
+	
+	• Provide policy information to other services for validation and processing
+	
+	• Support aggregation use cases for dashboards
+	
+	• Expose paginated and sorted APIs for efficient policy retrieval
 
-Responsibilities of this service includes Managing policy information,  Maintaining policy lifecycle states such as active, expired, or terminated,  Providing policy data to other services, Supporting policy aggregation and dashboard operations, Providing paginated and sorted policy retrieval APIs. Service URLs and environment configurations are managed through application.properties
+3) Tech Stack:
 
-Tech Stack: Java 17, Maven, Spring Boot, Spring Data JPA, SQL, REST API, RestTemplate (inter-service communication), Global Exception Handling, Pagination and Sorting.
+	• Java 17
+	
+	• Maven
+	
+	• Spring Boot
+	
+	• Spring Data JP
+	
+	• SQL
+	
+	• REST API
+	
+	• RestTemplate (inter-service communication)
+	
+	• Global Exception Handling
+	
+	• Pagination and Sorting
 
-Project Structure:
+4) Project Structure:
 
-controller   → REST API endpoints
+	• controller → Exposes REST endpoints and handles HTTP requests/responses
+	
+	• service → Contains core business logic
+	
+	• repository → Handles database interactions using Spring Data JPA
+	
+	• domain → Represents JPA entities mapped to database tables
+	
+	• dto → Defines request and response payloads for APIs
+	
+	• client → Handles inter-service communication using RestTemplate
+	
+	• exception → Contains custom exceptions and global exception handling
+	
+	• config → Includes application-level configurations & interceptor
+	
 
-service      → business logic
+5) API Endpoints:
 
-repository   → database access layer
+	• POST /api/policyinfo/create
+	
+	• GET  /api/policyinfo/{policyNumber}
+	
+	• GET  /api/policyinfo/policies/owner/{policyOwnerId}
+	
+	• PATCH  /api/policyinfo/{policyNumber}/cancel
+	
+	• PATCH  /api/policyinfo/{policyNumber}/renew
+	
+6) Configuration:
 
-entity       → JPA entity classes
-
-dto          → request and response models
-
-client       → communication with other microservices
-
-exception    → custom exceptions and global exception handling
-
-config       → application configurations
-
-API Endpoints:
-
-POST  - /create
-
-GET   - /{policyNumber}
-
-GET   - /policies/owner/{policyOwnerId}
-
-PATCH - /{policyNumber}/cancel
-
-PATCH - /{policyNumber}/renew
-
-These endpoints support policy creation, retrieval of policy details, retrieval of policies under specific owners, and aggregated policy retrieval required by the Agent Service.
+	• Environment-specific properties are managed via application.properties which includes:
+	
+		• Database configurations
+		 
+		• Service URLs for inter-service communication
